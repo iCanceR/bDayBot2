@@ -137,8 +137,7 @@ async def edit_value(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Изменено.")
     return ConversationHandler.END
 
-async def main():
-    from telegram.ext import ApplicationBuilder
+def main():
     TOKEN = os.getenv("TOKEN")
     app = ApplicationBuilder().token(TOKEN).build()
 
@@ -150,7 +149,7 @@ async def main():
             ADD_ID: [MessageHandler(filters.TEXT & ~filters.COMMAND, add_id)],
             ADD_BIRTHDAY: [MessageHandler(filters.TEXT & ~filters.COMMAND, add_birthday)],
         },
-        fallbacks=[CommandHandler("cancel", cancel)]
+        fallbacks=[CommandHandler("cancel", cancel)],
     )
 
     conv_edit = ConversationHandler(
@@ -159,7 +158,7 @@ async def main():
             EDIT_CHOICE: [MessageHandler(filters.TEXT & ~filters.COMMAND, edit_choice)],
             EDIT_NEW_VALUE: [MessageHandler(filters.TEXT & ~filters.COMMAND, edit_value)],
         },
-        fallbacks=[CommandHandler("cancel", cancel)]
+        fallbacks=[CommandHandler("cancel", cancel)],
     )
 
     app.add_handler(CommandHandler("start", start))
@@ -167,8 +166,9 @@ async def main():
     app.add_handler(conv_edit)
     app.add_handler(CommandHandler("delete", delete_entry))
     app.add_handler(CommandHandler("list", list_entries))
-    await app.run_polling()
+
+    # Запуск без asyncio.run()
+    app.run_polling()
 
 if __name__ == "__main__":
-    import asyncio
-    asyncio.run(main())
+    main()
